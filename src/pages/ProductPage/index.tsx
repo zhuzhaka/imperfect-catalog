@@ -39,6 +39,12 @@ export const ProductPage = ({ slug }: IProductPageProps) => {
         }
       })();
     }
+
+    return () => {
+      if (!isLoading) {
+        setProduct(null);
+      }
+    };
   }, [isLoading]);
 
   return (

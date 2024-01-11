@@ -2,6 +2,7 @@ import React, {
   ReactElement,
   createContext,
   useContext,
+  useMemo,
   useState,
 } from "react";
 import { ICatalogContext, ILaminatedChipboard, IProduct } from "../types";
@@ -25,22 +26,24 @@ export function CatalogProvider({
 
   const [categories, setCategories] = useCategories();
 
+  const value = useMemo(
+    () => ({
+      product,
+      setProduct,
+      categoryId,
+      setCategoryId,
+      categories,
+      setCategories,
+      laminatedChipboards,
+      setLaminatedChipboards,
+    }),
+    [product, categories, laminatedChipboards]
+  );
+
   console.log("catalog context");
 
   return (
-    <CatalogContext.Provider
-      value={{
-        product,
-        setProduct,
-        categoryId,
-        setCategoryId,
-        categories,
-        setCategories,
-        laminatedChipboards,
-        setLaminatedChipboards,
-      }}>
-      {children}
-    </CatalogContext.Provider>
+    <CatalogContext.Provider value={value}>{children}</CatalogContext.Provider>
   );
 }
 
