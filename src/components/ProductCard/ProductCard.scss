@@ -1,0 +1,24 @@
+@import "../../scss/variables";
+
+.product-card {
+  &__wrapper {
+    overflow: hidden;
+
+    border: 1px $gray-400 solid;
+    border-radius: 2px;
+  }
+
+  &__gallery {
+    img {
+      display: block;
+      width: 100%;
+      height: auto;
+      max-height: 100%;
+      object-fit: contain;
+    }
+  }
+
+  &__content {
+    padding: 0 15px;
+  }
+}

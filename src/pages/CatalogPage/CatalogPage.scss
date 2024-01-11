@@ -1,0 +1,16 @@
+.catalog-page {
+  &__content {
+    display: flex;
+  }
+
+  &__filters {
+    display: block;
+    width: 25%;
+    background-color: gray;
+  }
+
+  &__products {
+    flex: 1;
+    padding: 20px;
+  }
+}
