@@ -1,11 +1,13 @@
-import { ILaminatedChipboard } from "../types";
+import { IDto, ILaminatedChipboard } from "../types";
 
 interface ILaminatedChipboardResponse
   extends Omit<ILaminatedChipboard, "um_ldsp_texture"> {
   um_ldsp_texture: { guid: string };
 }
 
-export class LaminatedChipboardDTO implements ILaminatedChipboard {
+export class LaminatedChipboardDTO
+  implements ILaminatedChipboard, IDto<ILaminatedChipboard>
+{
   constructor(laminatedChipboard: any) {
     const chipboard = laminatedChipboard as ILaminatedChipboardResponse;
 
@@ -14,6 +16,10 @@ export class LaminatedChipboardDTO implements ILaminatedChipboard {
     this.um_ldsp_articul = chipboard.um_ldsp_articul;
     this.um_ldsp_thickness = chipboard.um_ldsp_thickness;
     this.um_ldsp_texture = chipboard.um_ldsp_texture.guid;
+  }
+
+  getSerializableObject(): ILaminatedChipboard {
+    return { ...this };
   }
 
   id: number;

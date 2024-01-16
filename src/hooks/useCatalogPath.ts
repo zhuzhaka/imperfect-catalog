@@ -1,9 +1,8 @@
 import { useLocation } from "react-router";
-import { useCatalog } from "../context";
-import { useEffect, useState } from "react";
-import { useCategories } from "./useCategories";
-import { CATALOG_PATHNAME } from "../helpers/consts";
+import { useSelector } from "react-redux";
+
 import { ICategory } from "../types";
+import { RootState } from "../store";
 
 export interface IUseCatalogPath {
   slug: string;
@@ -21,56 +20,57 @@ type BreadcrumbsType = {
 
 export function useCatalogPath(): IUseCatalogPath {
   const { pathname } = useLocation();
-  const { categories } = useCatalog();
-  const [catalogPathname, setCatalogPathname] = useState<IUseCatalogPath>(null);
+  const categories = useSelector(
+    (state: RootState) => state.catalog.categories
+  );
 
-  useEffect(() => {
-    if (categories) {
-      const invalidPathIndex: number[] = [];
+  let catalogPathname: IUseCatalogPath = null;
 
-      const { slug, breadcrumbs } = splitPathname(pathname).reduce(
-        (acc, slug, index) => {
-          const result: BreadcrumbsType = {
-            category: null,
-            fullPath: `${acc.fullPath}/${slug}`,
-            slug,
-            isCategory: false,
-          };
+  if (categories) {
+    const invalidPathIndex: number[] = [];
 
-          const category = categories.find((item) => item.slug === slug);
+    const { slug, breadcrumbs } = splitPathname(pathname).reduce(
+      (acc, slug, index) => {
+        const result: BreadcrumbsType = {
+          category: null,
+          fullPath: `${acc.fullPath}/${slug}`,
+          slug,
+          isCategory: false,
+        };
 
-          if (category) {
-            result.category = category;
-            result.isCategory = true;
-          } else {
-            invalidPathIndex.push(index);
-          }
+        const category = categories.find((item) => item.slug === slug);
 
-          acc.slug = slug;
-          acc.fullPath = result.fullPath;
-          acc.breadcrumbs.push(result);
+        if (category) {
+          result.category = category;
+          result.isCategory = true;
+        } else {
+          invalidPathIndex.push(index);
+        }
 
-          return acc;
-        },
-        { slug: "", fullPath: "", breadcrumbs: [] }
-      );
+        acc.slug = slug;
+        acc.fullPath = result.fullPath;
+        acc.breadcrumbs.push(result);
 
-      const isValid = invalidPathIndex.every(
-        (item) => item === breadcrumbs.length - 1
-      );
+        return acc;
+      },
+      { slug: "", fullPath: "", breadcrumbs: [] }
+    );
 
-      const isCategory = breadcrumbs.length
-        ? breadcrumbs[breadcrumbs.length - 1].isCategory
-        : true;
+    const isValid = invalidPathIndex.every(
+      (item) => item === breadcrumbs.length - 1
+    );
 
-      setCatalogPathname({
-        slug,
-        breadcrumbs: breadcrumbs.filter((item) => item.isCategory),
-        isValid,
-        isCategory,
-      });
-    }
-  }, [categories, pathname]);
+    const isCategory = breadcrumbs.length
+      ? breadcrumbs[breadcrumbs.length - 1].isCategory
+      : true;
+
+    catalogPathname = {
+      slug,
+      breadcrumbs: breadcrumbs.filter((item) => item.isCategory),
+      isValid,
+      isCategory,
+    };
+  }
 
   return catalogPathname;
 }

@@ -1,30 +1,53 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 
-import { CatalogPage } from "./pages/CatalogPage";
+import { ICategory } from "./types";
 import { Route, Routes } from "react-router";
-import { AppProvider, CatalogProvider } from "./context";
+import { Loading } from "./components/Loading";
+import { CatalogPage } from "./pages/CatalogPage";
+import { RoutingExample } from "./pages/TestPage";
 import { CatalogLayout } from "./components/CatalogLayout";
+import { CategoryApi, LaminatedChipboardApi } from "./http";
+import { setCategories, setLaminatedChipboards } from "./store/catalogSlice";
 
 import "./scss/style.scss";
-import { RoutingExample } from "./pages/TestPage";
+import { CatalogContent } from "./pages/CatalogContent";
 
 function App() {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const CATALOG_CATEGORY: ICategory = {
+      id: 0,
+      name: "Каталог",
+      slug: "catalog",
+      parent: null,
+      link: "/catalog",
+    };
+
+    Promise.all([
+      CategoryApi.findAll().then((data) =>
+        dispatch(setCategories([CATALOG_CATEGORY, ...data]))
+      ),
+      LaminatedChipboardApi.findAll().then((data) =>
+        dispatch(setLaminatedChipboards(data))
+      ),
+    ]).then(() => setIsLoading(false));
+  }, []);
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <AppProvider>
-      <Routes>
-        <Route path="/*" element={<RoutingExample />} />
-        <Route
-          path="/catalog/*"
-          element={
-            <CatalogProvider>
-              <CatalogLayout />
-            </CatalogProvider>
-          }>
-          {/* <Route path="*" element={<CatalogPage />} /> */}
-          <Route path=":slug/*" element={<CatalogPage />} />
-        </Route>
-      </Routes>
-    </AppProvider>
+    <Routes>
+      <Route path="/*" element={<RoutingExample />} />
+      <Route path="/catalog/*" element={<CatalogLayout />}>
+        <Route index element={<CatalogPage />} />
+        <Route path=":slug/*" element={<CatalogContent />} />
+      </Route>
+    </Routes>
   );
 }
 

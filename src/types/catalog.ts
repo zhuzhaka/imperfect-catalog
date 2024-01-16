@@ -1,4 +1,4 @@
-import { ICategoryApi, ILaminatedChipboardApi, IProductAPI } from "../http";
+import { IProductAPI, ICategoryApi, ILaminatedChipboardApi } from "./api";
 
 export interface ICatalogContext {
   product: IProduct;
@@ -12,6 +12,10 @@ export interface ICatalogContext {
 
   laminatedChipboards: ILaminatedChipboard[];
   setLaminatedChipboards?: Function;
+}
+
+export interface IDto<T> {
+  getSerializableObject(): T;
 }
 
 export interface IProduct

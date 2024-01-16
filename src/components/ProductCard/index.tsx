@@ -1,15 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
-import "./ProductCard.scss";
-import { ILaminatedChipboard, IProduct } from "../../types";
-import { useCatalog } from "../../context";
+import React from "react";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+
+import { ILaminatedChipboard, IProduct } from "../../types";
+import { RootState } from "../../store";
+
+import "./ProductCard.scss";
 
 interface IProductCardProps {
   product: IProduct;
 }
 
 export const ProductCard = ({ product }: IProductCardProps) => {
-  const { laminatedChipboards } = useCatalog();
+  const { laminatedChipboards } = useSelector(
+    (state: RootState) => state.catalog
+  );
 
   return (
     <div className="product-card__wrapper">

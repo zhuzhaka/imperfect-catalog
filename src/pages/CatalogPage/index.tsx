@@ -1,62 +1,28 @@
-import React, { useEffect, useState } from "react";
-import {
-  Navigate,
-  Route,
-  Routes,
-  useLocation,
-  useOutletContext,
-  useParams,
-} from "react-router";
+import React from "react";
+import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 
-import { ICategory } from "../../types";
-import { ProductList } from "../../components/ProductList";
-import { ProductPage } from "../ProductPage";
-import { useCatalog } from "../../context";
+import { RootState } from "../../store";
 
 import "./CatalogPage.scss";
-import { useCatalogPath } from "../../hooks/useCatalogPath";
-import { Loading } from "../../components/Loading";
-import { CatalogOutletContextType } from "../../components/CatalogLayout";
 
 export const CatalogPage = () => {
-  const { catalogPath } = useOutletContext<CatalogOutletContextType>();
-  console.log("catalog");
+  const categories = useSelector(
+    (state: RootState) => state.catalog.categories
+  );
+
+  const rootCategories = categories.filter((item) => !item.parent && item.id);
 
   return (
     <>
-      {catalogPath.isValid ? (
-        <CataloPageComponent
-          slug={catalogPath.slug}
-          isCategory={catalogPath.isCategory}
-        />
-      ) : (
-        <Navigate to={"/catalog"} />
-      )}
+      <h1>Каталог</h1>
+      <div className="categories-list__wrapper">
+        {rootCategories.map((item) => (
+          <Link key={item.id} to={item.slug}>
+            <span>{item.name}</span>
+          </Link>
+        ))}
+      </div>
     </>
   );
 };
-
-interface IComponentProps {
-  slug: string;
-  isCategory: boolean;
-}
-
-function CataloPageComponent({ slug, isCategory }: IComponentProps) {
-  console.log("component catalog");
-  return (
-    <>
-      {isCategory ? (
-        <div className="catalog-page">
-          <div className="catalog-page__content">
-            <div className="catalog-page__filters"></div>
-            <div className="catalog-page__products">
-              <ProductList />
-            </div>
-          </div>
-        </div>
-      ) : (
-        <ProductPage slug={slug} />
-      )}
-    </>
-  );
-}

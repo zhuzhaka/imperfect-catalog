@@ -1,14 +1,18 @@
 import React from "react";
-import { IUseCatalogPath } from "../../hooks/useCatalogPath";
+import { useSelector } from "react-redux";
 import { NavLink, useLocation } from "react-router-dom";
-import { useCatalog } from "../../context";
+
+import { IUseCatalogPath } from "../../hooks/useCatalogPath";
+import { RootState } from "../../store";
 
 type BreadcrumbsProps = {
   catalogPath: IUseCatalogPath;
 };
 
 export const Breadcrumbs = ({ catalogPath }: BreadcrumbsProps) => {
-  const { product } = useCatalog();
+  const { currentProduct: product } = useSelector(
+    (state: RootState) => state.catalog
+  );
   const { pathname } = useLocation();
 
   return (
