@@ -1,9 +1,11 @@
-import React from "react";
 import { useSelector } from "react-redux";
+import React, { useEffect, useRef, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 
 import { IUseCatalogPath } from "../../hooks/useCatalogPath";
 import { RootState } from "../../store";
+
+import "./Breadcrumbs.scss";
 
 type BreadcrumbsProps = {
   catalogPath: IUseCatalogPath;
@@ -15,26 +17,50 @@ export const Breadcrumbs = ({ catalogPath }: BreadcrumbsProps) => {
   );
   const { pathname } = useLocation();
 
+  const [prevPathname, setPrevPathname] = useState("");
+  const [currentPathname, setCurrentPathname] = useState(
+    localStorage.getItem("prev-pathname") || ""
+  );
+
+  useEffect(() => {
+    if (currentPathname !== pathname) {
+      setPrevPathname(currentPathname);
+      setCurrentPathname(pathname);
+      localStorage.setItem("prev-pathname", currentPathname);
+    }
+  }, [catalogPath]);
+
   return (
-    <div className="catalog-page__breadcrumbs">
-      <nav style={{ display: "flex" }}>
-        <NavLink to={"/"}>Главная</NavLink>
+    <nav className="catalog-page__breadcrumbs">
+      <ul className="breadcrumbs__list">
+        {prevPathname && (
+          <li className="breadcrumbs__item breadcrumbs__go-back">
+            <NavLink to={prevPathname}>
+              <span>Назад</span>
+            </NavLink>
+          </li>
+        )}
+        <li className="breadcrumbs__item">
+          <NavLink to={"/"}>
+            <span>Главная</span>
+          </NavLink>
+        </li>
         {catalogPath.breadcrumbs.map((path) => (
-          <div key={path.category.id}>
-            <span style={{ padding: "0 15px" }}>/</span>
-            <NavLink to={path.fullPath}>{path.category.name}</NavLink>
-          </div>
+          <li key={path.category.id} className="breadcrumbs__item">
+            <NavLink to={path.fullPath}>
+              <span>{path.category.name}</span>
+            </NavLink>
+          </li>
         ))}
 
         {product && (
-          <>
-            <span style={{ padding: "0 15px" }}>/</span>
+          <li className="breadcrumbs__item">
             <NavLink key={product.id} to={pathname}>
               {product.title}
             </NavLink>
-          </>
+          </li>
         )}
-      </nav>
-    </div>
+      </ul>
+    </nav>
   );
 };

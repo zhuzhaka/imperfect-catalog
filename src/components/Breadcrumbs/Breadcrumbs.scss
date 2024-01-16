@@ -1,0 +1,47 @@
+.breadcrumbs {
+  &__list {
+    display: flex;
+    padding: 15px 0;
+
+    :not(:last-child) {
+      color: gray;
+
+      @media (min-width: 992px) {
+        &::after {
+          content: "»";
+          position: relative;
+          padding: 0 8px;
+        }
+      }
+    }
+  }
+
+  &__item {
+    font-size: 14px;
+
+    @media (max-width: 991px) {
+      &:not(:nth-last-child(2), :first-child) {
+        display: none;
+      }
+
+      &:not(:nth-last-child(2)) {
+        &::after {
+          content: "»";
+          position: relative;
+          padding: 0 8px;
+        }
+      }
+    }
+
+    a {
+      &:hover {
+        span {
+          color: black;
+        }
+      }
+      span {
+        transition: 0.15s;
+      }
+    }
+  }
+}
